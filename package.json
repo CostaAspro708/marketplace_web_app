@@ -1,0 +1,22 @@
+{
+  "name": "bazaar-api",
+  "version": "1.0.0",
+  "description": "A marketplace api",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Constatine (Costa)",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.17.3",
+    "jade": "^0.31.2",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^1.0.4",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3"
+  }
+}
