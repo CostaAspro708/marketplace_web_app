@@ -9,7 +9,7 @@ function check(req, res, next){
     if(authHeader.split(" ")[0] == "Bearer" && authHeader.split(" ").length == 2){
         token = authHeader.split(" ")[1];
         try {
-            const decode = jwt.decode(token, secretKey);
+            const decode = jwt.decode(token, Key());
             if(decode.exp < Date.now()){
                 res.status(401).json({
                     error: true,
@@ -37,4 +37,10 @@ function check(req, res, next){
     return;
 }
 
-module.exports = { check };
+//Key for jwt. 
+function Key(){
+
+    return secretKey;
+}
+
+module.exports = { check, Key };

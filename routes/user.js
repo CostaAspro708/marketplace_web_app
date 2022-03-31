@@ -4,7 +4,8 @@ var route = express.Router();
 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const secretKey = "secret key";
+const auth = require("../public/auth");
+const secretKey = auth.Key();
 
 //Register route to register new users.
 //Param, username, password.

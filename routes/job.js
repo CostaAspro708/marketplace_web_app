@@ -3,7 +3,7 @@ var route = express.Router();
 
 var auth = require('../public/auth');
 const jwt = require("jsonwebtoken");
-const secretKey = "secret key";
+const secretKey = auth.Key();
 
 //Route to post a new job.
 //Param, title, description, location.
@@ -55,28 +55,80 @@ route.put('/update/:id', function(req,res,next){
     const title = req.body.title;
     const description = req.body.desc;
     const location = req.body.location; 
-    //TODO ADD VERIFY USR ID.
+
+    //Verify it is users job post.
+    let token = req.headers.authorization.split(" ")[1];
+    const decode = jwt.decode(token, secretKey);
+    let user_id = decode.id;
+
     console.log(id);
-    req.db.from("jobs").update({title: title, desc: description, location: location}).where({id: id, active: 1}).then((result) => {
+    req.db.from("jobs").update({title: title, desc: description, location: location}).where({id: id, active: 1, user_id: user_id}).then((result) => {
+       
+        if(!result){
+            res.status(401).json({
+                message: "Job is inactive",
+            });
+            return
+        }
         res.status(200).json({
             title: title,
             description: description,
             location: location,
         });
+        return;
     })
 });
 
-//Route to delete job with id. 
-
+//Route to delete job with id.
+//Params, Job id to be deleted.
+//Returns  success.
 route.put('/delete/:id', function(req,res,next){
     const id = req.params.id;
-    //TODO VERIFY USR ID.
-    req.db.from("jobs").update({active: 0}).then((result) => {
+
+    //Verify it is users job post. 
+    let token = req.headers.authorization.split(" ")[1];
+    const decode = jwt.decode(token, secretKey);
+    let user_id = decode.id;
+
+    req.db.from("jobs").update({active: 0}).where({id: id, user_id: user_id}).then((result) => {
+        
+        if(!result){
+            res.status(401).json({
+                success: false,
+                message: "Job is inactive",
+            });
+        }
+        
         res.status(200).json({
+            success: true,
             message: "Job successfully deleted.",
         });
+        return;
     })
-
 });
 
+//Route to return users current active jobs.
+//Param, authenticated user
+//Returns, success and json array.
+route.get('/me', function(req,res,next){
+    //Get user from token. 
+    let token = req.headers.authorization.split(" ")[1];
+    const decode = jwt.decode(token, secretKey);
+    let user_id = decode.id;
+
+    req.db.from("jobs").select("*").where({user_id: user_id, active: 1}).then((result) => {
+        if(!result){
+            res.status(400).json({
+                success: false,
+                message: "No active jobs were found",
+            });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            results: result,
+        });
+        return;
+    })
+});
 module.exports = route;
