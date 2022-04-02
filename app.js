@@ -62,8 +62,10 @@ app.use((req, res, next) => {
 //Routes
 var userRouter = require('./routes/user');
 var jobRouter = require('./routes/job');
+var messageRouter = require('./routes/message');
 app.use('/user', userRouter);
 app.use('/job', jobRouter);
+app.use('/message', messageRouter);
 app.get('/', function (req, res) {
     res.json("Home");
 });
