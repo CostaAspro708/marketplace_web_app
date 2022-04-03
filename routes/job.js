@@ -16,7 +16,7 @@ route.post('/', auth.check, function(req, res, next){
     
     const active = 1;
     //Parse token.
-    token = req.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization.split(" ")[1];
     const decode = jwt.decode(token, secretKey);
 
     //Check required fields in body.
