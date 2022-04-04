@@ -5,14 +5,19 @@ var auth = require('../public/auth');
 const jwt = require("jsonwebtoken");
 const secretKey = auth.Key();
 
-//Returns all messages sent to user. 
+//Route to get messages sent or recieved by user
+//Params, no params
+//Returns all messages sent or recieved by logged in user as json or fail if token not valid
 route.get('/', auth.check, function(req,res,next){
     const token = req.headers.authorization.split(" ")[1];
     const decode = jwt.decode(token, secretKey);
     const user_id = decode.id;
 
     req.db.from("messages").select('*').where({sender_id: user_id}).orWhere({reciever_id: user_id}).then((results) => {
-        res.send(results)
+        res.status(400).json({
+            success: false,
+            results: results,
+        });
         return;
     })
 });
@@ -31,7 +36,7 @@ route.post('/:recieverid',  auth.check, function(req,res,next){
     req.db.from("users").select("id").where({id: reciever_id}).then((result) => {
         if(!result.length){
             res.status(400).json({
-                success: false,
+                success: true,
                 message: "User id not found",
             });
             return;
